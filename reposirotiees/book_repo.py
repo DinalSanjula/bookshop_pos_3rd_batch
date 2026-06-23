@@ -94,5 +94,34 @@ class BookRepository:
             cursor.close()
             connection.close()
 
+    def update_book(self,book_id:int, book: BookCreate) -> Optional[BookResponse]:
+
+        connection = get_db_connection()
+        cursor = connection.cursor(cursor_factory=RealDictCursor)
+
+        query = """UPDATE books SET title =%s,
+        author = %s,
+        isbn = %s,
+        price = %s,
+        updated_at = CURRENT_TIMESTAMP
+        WHERE id =%s
+        RETURNING *"""
+
+        try:
+            cursor.execute(query,(book.title,book.author,book.isbn,book.price,book_id))
+
+            updated_book = cursor.fetchone()
+            connection.commit()
+
+            return BookResponse(**updated_book) if updated_book else None
+
+        except Exception as e:
+            connection.rollback()
+            raise e
+
+        finally:
+            cursor.close()
+            connection.close()
+
 
 
