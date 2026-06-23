@@ -50,12 +50,12 @@ class BookRepository:
 
         query = """
         Insert into books 
-        (title,author,isbn,price)
-        Values(%s,%s,%s,%s)
+        (title,author,isbn,price,updated_at)
+        Values(%s,%s,%s,%s,NULL)
         RETURNING * """
 
         try:
-            cursor.execute(query,book.title,book.author,book.isbn,book.price)
+            cursor.execute(query,(book.title,book.author,book.isbn,book.price))
 
             new_book = cursor.fetchone()
 

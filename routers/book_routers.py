@@ -30,3 +30,7 @@ def create_book(request:BookCreate):
 def delete_book(book_id:int):
     return service.delete_book(book_id)
 
+@router.put("/{book_id}")
+def update_book(book_id:int,book:BookCreate):
+    return service.update_book(book_id, book)
+

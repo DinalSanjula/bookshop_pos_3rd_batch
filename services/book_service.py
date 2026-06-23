@@ -54,11 +54,11 @@ class BookService:
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-    def update_book(self, book_id: int):
+    def update_book(self, book_id: int, book: BookCreate):
 
         try:
 
-            updated = self.repo.update_book(book_id)
+            updated = self.repo.update_book(book_id,book)
 
             if not updated:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book Not Found")
