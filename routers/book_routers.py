@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from fastapi import APIRouter
 
-from models.book_models import BookResponse, BookCreate
+from models.book_models import BookResponse, BookCreate, BookPatch
 from reposirotiees.book_repo import BookRepository
 from services.book_service import BookService
 
@@ -21,7 +21,7 @@ def get_all(offset:int = 0, limit: int = 10):
     return service.get_all_books(offset, limit)
 
 
-@router.post("/",response_model=BookResponse)
+@router.post("",response_model=BookResponse)
 def create_book(request:BookCreate):
     return service.create_book(request)
 
@@ -29,4 +29,14 @@ def create_book(request:BookCreate):
 @router.delete("/{book_id}",response_model=Optional[BookResponse])
 def delete_book(book_id:int):
     return service.delete_book(book_id)
+
+@router.put("/{book_id}",response_model=Optional[BookResponse])
+def update_book(book_id:int,book:BookCreate):
+    return service.update_book(book_id, book)
+
+@router.patch("/{book_id}",response_model=Optional[BookResponse])
+def patch_book(book_id:int,book:BookPatch):
+    return service.patch_book(book_id, book)
+
+
 
