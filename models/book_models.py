@@ -7,7 +7,7 @@ class BookBase(BaseModel):
     title: str = Field(..., max_length=200)
     author: str = Field(..., max_length=150)
     isbn: str = Field(..., max_length=50)
-    price: float = Field(..., gt=0)
+    price: float = Field(..., ge=0)
 
 
 class BookCreate(BookBase):
@@ -25,7 +25,7 @@ class BookResponse(BookBase):
 
 
 class BookPatch(BaseModel):
-    title: Optional[str] = None
+    title: Optional[str] = None #atomic habits
     author: Optional[str] = None
     isbn: Optional[str] = None
     price: Optional[float] = None

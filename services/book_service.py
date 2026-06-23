@@ -4,7 +4,7 @@ from typing import Optional
 from starlette import status
 from starlette.exceptions import HTTPException
 
-from models.book_models import BookResponse, BookCreate
+from models.book_models import BookResponse, BookCreate, BookPatch
 from reposirotiees.book_repo import BookRepository
 
 
@@ -67,6 +67,21 @@ class BookService:
 
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+    def patch_book(self,book_id:int, book : BookPatch):
+
+        try:
+            patch_book = self.repo.patch_book(book_id, book)
+
+            if not patch_book:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book Not Found")
+
+            return patch_book
+
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
 
 
 

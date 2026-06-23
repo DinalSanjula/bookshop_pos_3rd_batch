@@ -1,9 +1,13 @@
+from dataclasses import field
 from typing import Optional, List
 
 from psycopg2.extras import RealDictCursor
 
-from models.book_models import BookResponse, BookCreate
+from models.book_models import BookResponse, BookCreate, BookPatch
 from reposirotiees.database_config import get_db_connection
+
+
+
 
 
 class BookRepository:
@@ -99,7 +103,8 @@ class BookRepository:
         connection = get_db_connection()
         cursor = connection.cursor(cursor_factory=RealDictCursor)
 
-        query = """UPDATE books SET title =%s,
+        query = """UPDATE books SET 
+        title =%s,
         author = %s,
         isbn = %s,
         price = %s,
@@ -122,6 +127,49 @@ class BookRepository:
         finally:
             cursor.close()
             connection.close()
+
+    def patch_book(self,book_id:int, book: BookPatch) -> Optional[BookResponse]:
+
+        connection = get_db_connection()
+        cursor = connection.cursor(cursor_factory=RealDictCursor)
+
+        try:
+
+
+            patch_data = book.model_dump(exclude_none=True)
+
+            if not patch_data:
+                return self.get_by_id(book_id)
+
+            set_clause = ','.join(f"{field} =%s" for field in patch_data.keys()) #{title:"abc",author:"abc} = ["title =%s,  author =%s"]
+
+
+            set_clause += ",updated_at = CURRENT_TIMESTAMP"
+
+            values = list(patch_data.values()) #["abc","abc",]
+            values.append(book_id)
+
+            query = f"""
+                    UPDATE books SET {set_clause}
+                    where id = %s
+                    RETURNING *
+"""
+            cursor.execute(query,tuple(values))
+
+            patched_book = cursor.fetchone()
+            connection.commit()
+
+            return BookResponse(**patched_book) if patched_book else None
+
+        except Exception as e :
+            connection.rollback()
+            raise e
+
+        finally:
+            cursor.close()
+            connection.close()
+
+
 
 
 
